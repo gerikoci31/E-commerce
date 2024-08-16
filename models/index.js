@@ -18,27 +18,30 @@ logging: false,
 });
  
 // Import models
-const Product = require('./product');
 const Category = require('./category');
+const Product = require('./product');
+
 const Tag = require('./tag');
 const ProductTag = require('./productTag');
  
 // Initialize models
-Product.init(sequelize, Sequelize.DataTypes);
 Category.init(sequelize, Sequelize.DataTypes);
+Product.init(sequelize, Sequelize.DataTypes);
+
 Tag.init(sequelize, Sequelize.DataTypes);
 ProductTag.init(sequelize, Sequelize.DataTypes);
  
 // Define associations
-Product.belongsTo(Category, { foreignKey: 'category_id' });
 Category.hasMany(Product, { foreignKey: 'category_id', onDelete: 'SET NULL' });
+Product.belongsTo(Category, { foreignKey: 'category_id' });
+
 Product.belongsToMany(Tag, { through: ProductTag, foreignKey: 'product_id', otherKey: 'tag_id' });
 Tag.belongsToMany(Product, { through: ProductTag, foreignKey: 'tag_id', otherKey: 'product_id' });
  
 module.exports = {
 sequelize, 
-Product, 
 Category, 
+Product, 
 Tag, 
 ProductTag, 
 };
