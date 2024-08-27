@@ -1,9 +1,9 @@
 const express = require('express');
-const { sequelize } = require('./models'); // Import sequelize instance
+const { sequelize } = require('./models');
+const { Category, Product } = require('./models');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -14,12 +14,17 @@ app.use('/api/products', require('./routes/product-routes'));
 app.use('/api/tags', require('./routes/tag-routes'));
 
 // Sync sequelize models and start server
-sequelize.sync({ force: false }) 
-  .then(() => {
+const syncDatabase = async () => {
+  try {
+    await sequelize.sync({ force: false });
+    await Category.sync();
+    await Product.sync();
     app.listen(PORT, () => {
       console.log(`App listening on port ${PORT}!`);
     });
-  })
-  .catch((err) => {
-    console.error('Error syncing models with database:', err);
-  });
+  } catch (error) {
+    console.error('Error syncing models with database:', error);
+  }
+};
+
+syncDatabase();
