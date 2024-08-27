@@ -7,7 +7,7 @@ try {
   const categories = await Category.findAll({
     include: {
       model: Product,
-      as: 'products'
+      as: 'Products'
     }
   });
   res.status(200).json(categories);
