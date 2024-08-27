@@ -1,4 +1,3 @@
-
 const Sequelize = require('sequelize');
 require('dotenv').config();
  
@@ -14,15 +13,15 @@ const connectionString = `postgres://${dbUser}:${dbPassword}@${dbHost}:${dbPort}
 // Initialize Sequelize instance
 const sequelize = new Sequelize(connectionString, {
 dialect: 'postgres', 
-logging: false, 
+logging: console.log,
 });
+
  
 // Import models
-const Category = require('./category');
-const Product = require('./product');
-
-const Tag = require('./tag');
-const ProductTag = require('./productTag');
+const Category = require('./Category');
+const Product = require('./Product');
+const Tag = require('./Tag');
+const ProductTag = require('./ProductTag');
  
 // Initialize models
 Category.init(sequelize, Sequelize.DataTypes);
@@ -46,9 +45,21 @@ Tag,
 ProductTag, 
 };
  
-// Sync models with the database
-sequelize.sync({ force: true }).then(() => {
-console.log('Database & tables created!'); 
-}).catch(error => {
-console.error('Error synchronizing the database:', error); 
-});
+async function syncDatabase() {
+    try {
+      await sequelize.authenticate();
+      console.log('Connection has been established successfully.');
+      
+      // Synchronize models in the correct order
+      await Category.sync({ force: true });
+      await Product.sync({ force: true });
+      await Tag.sync({ force: true });
+      await ProductTag.sync({ force: true });
+
+      console.log('Database & tables created!');
+    } catch (error) {
+      console.error('Error synchronizing the database:', error);
+    }
+  }
+  
+syncDatabase();
